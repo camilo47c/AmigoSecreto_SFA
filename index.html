@@ -294,6 +294,124 @@
   @media (max-width:420px){
     .card{ padding:1.6rem 1.25rem; border-radius:18px; }
   }
+
+  /* ---------- Endulzada ---------- */
+  .endulzada{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+    padding-top:0.4rem;
+  }
+  .endulzada-title{
+    font-family:var(--font-display);
+    font-style:italic;
+    font-weight:600;
+    font-size:1.15rem;
+    color:var(--ink);
+    margin:0;
+  }
+  .endulzada-hint{
+    font-size:0.85rem;
+    color:var(--ink-faint);
+    margin:0;
+    line-height:1.45;
+  }
+
+  .write-textarea{
+    width:100%;
+    font-family:var(--font-body);
+    font-size:0.95rem;
+    color:var(--ink);
+    background:#fff;
+    border:1.5px solid var(--divider);
+    border-radius:12px;
+    padding:0.75rem 0.9rem;
+    outline:none;
+    resize:vertical;
+    min-height:5rem;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .write-textarea:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px rgba(62,134,190,0.15);
+  }
+  .write-textarea::placeholder{ color:var(--ink-faint); }
+
+  .send-btn{
+    align-self:flex-end;
+    font-family:var(--font-body);
+    font-weight:800;
+    font-size:0.88rem;
+    color:var(--accent-deep);
+    background:rgba(62,134,190,0.12);
+    border:1.5px solid rgba(62,134,190,0.3);
+    border-radius:10px;
+    padding:0.55rem 1rem;
+    cursor:pointer;
+    transition:filter .12s ease, transform .12s ease;
+  }
+  .send-btn:hover{ filter:brightness(0.97); }
+  .send-btn:active{ transform:translateY(1px); }
+  .send-btn:disabled{ opacity:0.55; cursor:default; }
+
+  .send-status{
+    font-size:0.82rem;
+    color:var(--accent-deep);
+    font-weight:600;
+    margin:0;
+    min-height:1.1rem;
+  }
+  .send-status[data-tone="error"]{ color:var(--error); }
+
+  .locked-note{
+    font-size:0.85rem;
+    color:var(--ink-faint);
+    background:rgba(62,134,190,0.08);
+    border:1px dashed rgba(62,134,190,0.28);
+    border-radius:12px;
+    padding:0.75rem 0.9rem;
+    margin:0;
+    text-align:center;
+  }
+
+  .week-block{ display:flex; flex-direction:column; gap:0.6rem; }
+  .week-title{
+    font-family:var(--font-body);
+    font-weight:800;
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--accent-deep);
+    margin:0;
+  }
+  .msg-card{
+    background:#fff;
+    border:1px solid var(--divider);
+    border-radius:12px;
+    padding:0.75rem 0.9rem;
+    text-align:left;
+  }
+  .msg-text{
+    font-size:0.92rem;
+    color:var(--ink);
+    font-style:italic;
+    margin:0 0 0.3rem 0;
+    line-height:1.5;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+  }
+  .msg-date{
+    font-size:0.72rem;
+    color:var(--ink-faint);
+    margin:0;
+  }
+  .msg-empty{
+    font-size:0.85rem;
+    color:var(--ink-faint);
+    font-style:italic;
+    margin:0;
+  }
 </style>
 
 <div class="clouds" aria-hidden="true">
@@ -351,6 +469,25 @@
         <p class="reveal-text" id="outIntencion"></p>
       </div>
       <span class="verse-chip" id="outVerso"></span>
+
+      <hr class="divider">
+      <div class="endulzada" id="writeSection">
+        <p class="endulzada-title">Endulzada católica</p>
+        <p class="endulzada-hint" id="writeHint"></p>
+        <textarea class="write-textarea" id="writeText" maxlength="500" placeholder="Escríbele un mensaje o una oración a tu amigo secreto..."></textarea>
+        <button class="send-btn" id="sendBtn" type="button">Enviar</button>
+        <p class="send-status" id="sendStatus"></p>
+      </div>
+
+      <hr class="divider">
+      <div class="endulzada" id="receivedSection">
+        <p class="endulzada-title">Lo que te han escrito</p>
+        <div id="receivedContent">
+          <p class="msg-empty">Cargando…</p>
+        </div>
+      </div>
+
+      <hr class="divider">
       <p class="secret-note">Shhh… que sea secreto hasta el intercambio 🤫</p>
       <button class="reset-link" id="resetBtn" type="button">Buscar otro código</button>
     </div>
@@ -395,6 +532,7 @@
     document.getElementById('outVerso').textContent = match.versiculo + ' · "' + match.versiculo_txt + '"';
     formWrap.classList.add('is-hidden');
     revealWrap.classList.add('is-visible');
+    initEndulzada(key, match);
   });
 
   resetBtn.addEventListener('click', function(){
@@ -403,4 +541,211 @@
     input.value = '';
     input.focus();
   });
+
+  /* ---------- Endulzada católica ---------- */
+  const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScpKW8FcYm2glbD-C3F5LPQdJR6YmrXiZuA_2-bTNGJkvy-rA/formResponse';
+  const ENTRY_CODE = 'entry.477407690';
+  const ENTRY_MSG = 'entry.430975945';
+  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1rEFxDA7XzzvDnJaLGukO1vDrNNznIksjp2xhUR_ki5s/gviz/tq?tqx=out:csv&gid=0';
+
+  function bogotaNow(){
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+  }
+
+  // Ventanas (hora de Bogotá)
+  const WRITE_START   = new Date(2026, 8, 8, 0, 0, 0);
+  const WRITE_END     = new Date(2026, 8, 21, 23, 59, 59);
+  const WEEK1_START   = new Date(2026, 8, 8, 0, 0, 0);
+  const WEEK1_END     = new Date(2026, 8, 14, 23, 59, 59);
+  const WEEK2_START   = new Date(2026, 8, 15, 0, 0, 0);
+  const WEEK2_END     = new Date(2026, 8, 21, 23, 59, 59);
+  const REVEAL_WEEK1  = new Date(2026, 8, 14, 0, 0, 0);
+  const REVEAL_WEEK2  = new Date(2026, 8, 21, 0, 0, 0);
+
+  function parseSheetDate(raw){
+    if(!raw) return null;
+    const d = new Date(raw);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  // Parser CSV simple (soporta campos entre comillas con comas/comillas internas)
+  function parseCsv(text){
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for(let i = 0; i < text.length; i++){
+      const c = text[i];
+      if(inQuotes){
+        if(c === '"'){
+          if(text[i+1] === '"'){ field += '"'; i++; }
+          else{ inQuotes = false; }
+        } else { field += c; }
+      } else {
+        if(c === '"'){ inQuotes = true; }
+        else if(c === ','){ row.push(field); field = ''; }
+        else if(c === '\n' || c === '\r'){
+          if(c === '\r' && text[i+1] === '\n') i++;
+          row.push(field); field = '';
+          rows.push(row); row = [];
+        } else { field += c; }
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    return rows.filter(r => r.some(v => v !== ''));
+  }
+
+  function initEndulzada(myCode, myMatch){
+    setupWriteBox();
+    loadReceived(myMatch.nombre);
+  }
+
+  function setupWriteBox(){
+    const now = bogotaNow();
+    const writeHint = document.getElementById('writeHint');
+    const writeText = document.getElementById('writeText');
+    const sendBtn = document.getElementById('sendBtn');
+    const sendStatus = document.getElementById('sendStatus');
+
+    if(now < WRITE_START){
+      writeHint.textContent = 'La endulzada empieza el 8 de septiembre. Vuelve esa semana para escribirle.';
+      writeText.disabled = true; sendBtn.disabled = true;
+      return;
+    }
+    if(now > WRITE_END){
+      writeHint.textContent = 'La endulzada católica ya cerró (terminó el 21 de septiembre).';
+      writeText.disabled = true; sendBtn.disabled = true;
+      return;
+    }
+    writeHint.textContent = 'Puedes escribirle todos los días o solo una vez, como quieras. Es anónimo para él o ella.';
+
+    sendBtn.addEventListener('click', function(){
+      const msg = (writeText.value || '').trim();
+      if(!msg){
+        sendStatus.textContent = 'Escribe algo antes de enviar.';
+        sendStatus.setAttribute('data-tone', 'error');
+        return;
+      }
+      sendBtn.disabled = true;
+      sendStatus.removeAttribute('data-tone');
+      sendStatus.textContent = 'Enviando…';
+
+      const body = new URLSearchParams();
+      body.append(ENTRY_CODE, myCodeValue());
+      body.append(ENTRY_MSG, msg);
+
+      fetch(FORM_ACTION, { method: 'POST', mode: 'no-cors', body: body })
+        .then(function(){
+          sendStatus.textContent = '¡Enviado! Puedes escribir otro mensaje cuando quieras.';
+          writeText.value = '';
+          sendBtn.disabled = false;
+        })
+        .catch(function(){
+          sendStatus.textContent = 'No se pudo enviar, revisa tu conexión e intenta de nuevo.';
+          sendStatus.setAttribute('data-tone', 'error');
+          sendBtn.disabled = false;
+        });
+    });
+
+    function myCodeValue(){
+      return input.value.trim();
+    }
+  }
+
+  function loadReceived(myName){
+    const now = bogotaNow();
+    const content = document.getElementById('receivedContent');
+
+    if(now < REVEAL_WEEK1){
+      content.innerHTML = '';
+      const p = document.createElement('p');
+      p.className = 'locked-note';
+      p.textContent = '🔒 Se revela el 14 de septiembre, en el primer encuentro.';
+      content.appendChild(p);
+      return;
+    }
+
+    fetch(SHEET_CSV_URL)
+      .then(function(r){ return r.text(); })
+      .then(function(text){
+        const rows = parseCsv(text);
+        rows.shift(); // encabezados
+        const week1 = [];
+        const week2 = [];
+        rows.forEach(function(r){
+          const fecha = parseSheetDate(r[0]);
+          const codigo = normalize(r[1] || '');
+          const mensaje = (r[2] || '').trim();
+          const sender = DATA[codigo];
+          if(!sender || sender.amigo !== myName || !mensaje) return;
+          const entry = { fecha: fecha, texto: mensaje };
+          if(fecha && fecha >= WEEK1_START && fecha <= WEEK1_END) week1.push(entry);
+          else if(fecha && fecha >= WEEK2_START && fecha <= WEEK2_END) week2.push(entry);
+          else week1.push(entry); // fecha rara: se muestra igual, en semana 1
+        });
+        renderReceived(content, week1, week2, now);
+      })
+      .catch(function(){
+        content.innerHTML = '';
+        const p = document.createElement('p');
+        p.className = 'msg-empty';
+        p.textContent = 'No se pudieron cargar los mensajes ahora mismo. Intenta refrescar la página en un rato.';
+        content.appendChild(p);
+      });
+  }
+
+  function renderReceived(content, week1, week2, now){
+    content.innerHTML = '';
+
+    const block1 = document.createElement('div');
+    block1.className = 'week-block';
+    const t1 = document.createElement('p');
+    t1.className = 'week-title';
+    t1.textContent = 'Semana 1 · 8 al 14 de septiembre';
+    block1.appendChild(t1);
+    if(week1.length === 0){
+      const p = document.createElement('p');
+      p.className = 'msg-empty';
+      p.textContent = 'Nadie te escribió esta semana.';
+      block1.appendChild(p);
+    } else {
+      week1.forEach(function(m){ block1.appendChild(msgCard(m)); });
+    }
+    content.appendChild(block1);
+
+    const block2 = document.createElement('div');
+    block2.className = 'week-block';
+    const t2 = document.createElement('p');
+    t2.className = 'week-title';
+    t2.textContent = 'Semana 2 · 15 al 21 de septiembre';
+    block2.appendChild(t2);
+    if(now < REVEAL_WEEK2){
+      const p = document.createElement('p');
+      p.className = 'locked-note';
+      p.textContent = '🔒 Se revela el 21 de septiembre, en el segundo encuentro.';
+      block2.appendChild(p);
+    } else if(week2.length === 0){
+      const p = document.createElement('p');
+      p.className = 'msg-empty';
+      p.textContent = 'Nadie te escribió esta semana.';
+      block2.appendChild(p);
+    } else {
+      week2.forEach(function(m){ block2.appendChild(msgCard(m)); });
+    }
+    content.appendChild(block2);
+  }
+
+  function msgCard(m){
+    const div = document.createElement('div');
+    div.className = 'msg-card';
+    const txt = document.createElement('p');
+    txt.className = 'msg-text';
+    txt.textContent = '"' + m.texto + '"';
+    div.appendChild(txt);
+    if(m.fecha){
+      const d = document.createElement('p');
+      d.className = 'msg-date';
+      d.textContent = m.fecha.toLocaleDateString('es-CO', { day:'numeric', month:'long' });
+      div.appendChild(d);
+    }
+    return div;
+  }
 </script>
