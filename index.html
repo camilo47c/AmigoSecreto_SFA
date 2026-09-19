@@ -754,12 +754,6 @@
     txt.className = 'msg-text';
     txt.textContent = '"' + m.texto + '"';
     div.appendChild(txt);
-    if(m.fecha){
-      const d = document.createElement('p');
-      d.className = 'msg-date';
-      d.textContent = m.fecha.toLocaleDateString('es-CO', { day:'numeric', month:'long' });
-      div.appendChild(d);
-    }
     return div;
   }
 </script>
