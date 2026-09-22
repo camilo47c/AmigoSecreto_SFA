@@ -554,11 +554,11 @@
 
   // Ventanas (hora de Bogotá)
   const WRITE_START   = new Date(2026, 8, 8, 0, 0, 0);
-  const WRITE_END     = new Date(2026, 8, 21, 23, 59, 59);
+  const WRITE_END     = new Date(2026, 8, 22, 23, 59, 59);
   const WEEK1_START   = new Date(2026, 8, 8, 0, 0, 0);
   const WEEK1_END     = new Date(2026, 8, 14, 23, 59, 59);
   const WEEK2_START   = new Date(2026, 8, 15, 0, 0, 0);
-  const WEEK2_END     = new Date(2026, 8, 21, 23, 59, 59);
+  const WEEK2_END     = new Date(2026, 8, 22, 23, 59, 59);
   const REVEAL_WEEK1  = new Date(2026, 8, 14, 0, 0, 0);
   const REVEAL_WEEK2  = new Date(2026, 8, 21, 0, 0, 0);
 
@@ -625,7 +625,7 @@
       return;
     }
     if(now > WRITE_END){
-      writeHint.textContent = 'La endulzada católica ya cerró (terminó el 21 de septiembre).';
+      writeHint.textContent = 'La endulzada católica ya cerró (terminó el 22 de septiembre).';
       writeText.disabled = true; sendBtn.disabled = true;
       return;
     }
@@ -729,7 +729,7 @@
     block2.className = 'week-block';
     const t2 = document.createElement('p');
     t2.className = 'week-title';
-    t2.textContent = 'Semana 2 · 15 al 21 de septiembre';
+    t2.textContent = 'Semana 2 · 15 al 22 de septiembre';
     block2.appendChild(t2);
     if(now < REVEAL_WEEK2){
       const p = document.createElement('p');
