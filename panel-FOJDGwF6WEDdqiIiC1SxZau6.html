@@ -153,13 +153,13 @@
   const WEEK1_START = new Date(2026, 8, 8, 0, 0, 0);
   const WEEK1_END   = new Date(2026, 8, 14, 23, 59, 59);
   const WEEK2_START = new Date(2026, 8, 15, 0, 0, 0);
-  const WEEK2_END   = new Date(2026, 8, 21, 23, 59, 59);
+  const WEEK2_END   = new Date(2026, 8, 22, 23, 59, 59);
 
   function currentWeek(now){
     if(now >= WEEK1_START && now <= WEEK1_END) return {label:'Semana 1 (8–14 sept)', start:WEEK1_START, end:WEEK1_END};
-    if(now >= WEEK2_START && now <= WEEK2_END) return {label:'Semana 2 (15–21 sept)', start:WEEK2_START, end:WEEK2_END};
+    if(now >= WEEK2_START && now <= WEEK2_END) return {label:'Semana 2 (15–22 sept)', start:WEEK2_START, end:WEEK2_END};
     if(now < WEEK1_START) return {label:'Aún no empieza (desde el 8 de sept)', start:WEEK1_START, end:WEEK1_END, notStarted:true};
-    return {label:'La endulzada ya cerró (terminó el 21 de sept)', start:WEEK2_START, end:WEEK2_END, closed:true};
+    return {label:'La endulzada ya cerró (terminó el 22 de sept)', start:WEEK2_START, end:WEEK2_END, closed:true};
   }
 
   function parseCsv(text){
